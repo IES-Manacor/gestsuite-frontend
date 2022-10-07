@@ -39,17 +39,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import {
-  UsuariWebIesManacorDepartaments
-} from "src/model/apps/webiesmanacordepartaments/UsuariWebIesManacorDepartaments";
-import {UsuariWebIesManacorDepartamentsService} from "src/service/UsuariWebIesManacorDepartamentsService";
+  UsuariWebIesManacor
+} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
+import {UsuariWebIesManacorService} from "src/service/UsuariWebIesManacorService";
 
 
 export default defineComponent({
   name: 'UsuariForm',
   data() {
     return {
-      usuari: {} as UsuariWebIesManacorDepartaments,
-      usuaris: [] as UsuariWebIesManacorDepartaments[]
+      usuari: {} as UsuariWebIesManacor,
+      usuaris: [] as UsuariWebIesManacor[]
     }
   },
   async created() {
@@ -68,11 +68,11 @@ export default defineComponent({
 
       if(id && id!='') {
         console.log(id)
-        const usuari:UsuariWebIesManacorDepartaments = await UsuariWebIesManacorDepartamentsService.getById(parseInt(id));
+        const usuari:UsuariWebIesManacor = await UsuariWebIesManacorService.getById(parseInt(id));
 
         this.usuari = usuari;
 
-        this.usuaris = await UsuariWebIesManacorDepartamentsService.findUsuaris();
+        this.usuaris = await UsuariWebIesManacorService.findUsuaris();
       }
 
 
@@ -86,7 +86,7 @@ export default defineComponent({
         ok: false // we want the user to not be able to close it
       })
 
-      await UsuariWebIesManacorDepartamentsService.save(this.usuari)
+      await UsuariWebIesManacorService.save(this.usuari)
       dialog.hide();
 
       //Redirect

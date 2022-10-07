@@ -550,7 +550,7 @@ export default defineComponent({
         return user.cognom1 + ' ' + user.cognom2 + ', ' + user.nom + ' ('+user.email+')' === val
       });
       if(usuari){
-        //console.log("UsuariWebIesManacorDepartaments.ts ",usuari);
+        //console.log("UsuariWebIesManacor.ts ",usuari);
         const member:Membre = {
           nom: usuari.cognom1 + ' ' + usuari.cognom2 + ', ' + usuari.nom,
           valorsItemMembre: [],

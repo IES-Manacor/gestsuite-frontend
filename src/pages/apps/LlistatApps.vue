@@ -20,7 +20,7 @@ export default defineComponent({
       llistatApps: [],
       enableGrupsCooperatius: false,
       enableConvalidacions: false,
-      enableWebIESManacorDepartaments: false
+      enableWebIESManacor: false
     }
   },
   created() {
@@ -30,7 +30,7 @@ export default defineComponent({
     get: async function () {
       this.enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
       this.enableConvalidacions=(process.env.APP_ENABLE_CONVALIDACIONS==='true');
-      this.enableWebIESManacorDepartaments=(process.env.APP_ENABLE_WEBIESMANACORDEPARTAMENTS==='true');
+      this.enableWebIESManacor=(process.env.APP_ENABLE_WEBIESMANACOR==='true');
 
       if(this.enableGrupsCooperatius) {
         this.llistatApps.push({
@@ -48,7 +48,7 @@ export default defineComponent({
         });
       }
 
-      if(this.enableWebIESManacorDepartaments) {
+      if(this.enableWebIESManacor) {
         this.llistatApps.push({
           icon: 'public',
           nom: 'Web',

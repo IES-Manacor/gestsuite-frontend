@@ -2,8 +2,8 @@ import {axios}  from 'boot/axios'
 import {Curs} from "src/model/gestib/Curs";
 import {Departament} from "src/model/gestib/Departament";
 import {
-  UsuariWebIesManacorDepartaments
-} from "src/model/apps/webiesmanacordepartaments/UsuariWebIesManacorDepartaments";
+  UsuariWebIesManacor
+} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 import {UsuariService} from "src/service/UsuariService";
 
 export class DepartamentService {

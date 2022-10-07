@@ -136,9 +136,9 @@ export default defineComponent({
 
     const enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
     const enableConvalidacions=(process.env.APP_ENABLE_CONVALIDACIONS==='true');
-    const enableWebIESManacorDepartaments=(process.env.APP_ENABLE_WEBIESMANACORDEPARTAMENTS==='true');
+    const enableWebIESManacor=(process.env.APP_ENABLE_WEBIESMANACOR==='true');
 
-    const enableApps = enableGrupsCooperatius || enableConvalidacions || enableWebIESManacorDepartaments;
+    const enableApps = enableGrupsCooperatius || enableConvalidacions || enableWebIESManacor;
 
     return {
       rolsUser,

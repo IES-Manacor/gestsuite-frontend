@@ -12,7 +12,7 @@
             <q-item v-for="departament in departaments">
               <q-item-section>
                 <q-item><strong>{{departament.nom}}</strong></q-item>
-                <q-item>&lt;script type="text/javascript" crossorigin="anonymous" src="{{urlServer}}/api/webiesmanacordepartaments/public/loadDepartament/{{departament.id}}/script.js"&gt;&lt;script&gt;</q-item>
+                <q-item>&lt;script type="text/javascript" crossorigin="anonymous" src="{{urlServer}}/api/webiesmanacor/public/loadDepartament/{{departament.id}}/script.js"&gt;&lt;script&gt;</q-item>
               </q-item-section>
             </q-item>
           </q-list>
@@ -23,11 +23,11 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import {UsuariWebIesManacorDepartamentsService} from "../../../service/UsuariWebIesManacorDepartamentsService";
+import {UsuariWebIesManacorService} from "../../../service/UsuariWebIesManacorService";
 import {QTableColumn} from "quasar";
 import {
-  UsuariWebIesManacorDepartaments
-} from "src/model/apps/webiesmanacordepartaments/UsuariWebIesManacorDepartaments";
+  UsuariWebIesManacor
+} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 import {Departament} from "src/model/gestib/Departament";
 import {DepartamentService} from "src/service/DepartamentService";
 

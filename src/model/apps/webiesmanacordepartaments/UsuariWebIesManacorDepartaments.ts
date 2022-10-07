@@ -1,7 +1,7 @@
 import {Usuari} from "src/model/Usuari";
 import {Departament} from "src/model/gestib/Departament";
 
-export interface UsuariWebIesManacorDepartaments {
+export interface UsuariWebIesManacor {
   id?: number;
   foto?: string;
   carrec1?: string;
@@ -9,7 +9,7 @@ export interface UsuariWebIesManacorDepartaments {
   carrec3?: string;
   professor?: Usuari;
   departament?: Departament;
-  substitut?: UsuariWebIesManacorDepartaments;
+  substitut?: UsuariWebIesManacor;
   label?: string;
   value?: string;
 }

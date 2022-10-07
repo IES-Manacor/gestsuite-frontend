@@ -47,9 +47,9 @@ const routes: RouteRecordRaw[] = [
       { path: 'apps/convalidacions/solicituds', component: () => import('pages/apps/convalidacions/SolicitudList.vue') },
       { path: 'apps/convalidacions/solicitud', component: () => import('pages/apps/convalidacions/SolicitudForm.vue') },
       { path: 'apps/convalidacions/solicitud/:id', component: () => import('pages/apps/convalidacions/SolicitudForm.vue') },
-      { path: 'apps/web/usuaris', component: () => import('pages/apps/web-iesmanacor-departaments/UsuariList.vue') },
-      { path: 'apps/web/usuari/:id', component: () => import('pages/apps/web-iesmanacor-departaments/UsuariForm.vue') },
-      { path: 'apps/web/scripts', component: () => import('pages/apps/web-iesmanacor-departaments/Scripts.vue') },
+      { path: 'apps/web/usuaris', component: () => import('pages/apps/web-iesmanacor/UsuariList.vue') },
+      { path: 'apps/web/usuari/:id', component: () => import('pages/apps/web-iesmanacor/UsuariForm.vue') },
+      { path: 'apps/web/scripts', component: () => import('pages/apps/web-iesmanacor/Scripts.vue') },
     ],
   },
   {

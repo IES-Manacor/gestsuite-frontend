@@ -62,18 +62,18 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
-import {UsuariWebIesManacorDepartamentsService} from "../../../service/UsuariWebIesManacorDepartamentsService";
+import {UsuariWebIesManacorService} from "../../../service/UsuariWebIesManacorService";
 import {QTableColumn} from "quasar";
 import {
-  UsuariWebIesManacorDepartaments
-} from "src/model/apps/webiesmanacordepartaments/UsuariWebIesManacorDepartaments";
+  UsuariWebIesManacor
+} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 
 export default defineComponent({
   name: 'UsuariList',
   data() {
     return {
       columnes: [] as QTableColumn[],
-      usuaris: [] as UsuariWebIesManacorDepartaments[],
+      usuaris: [] as UsuariWebIesManacor[],
       filter: '',
     }
   },
@@ -165,7 +165,7 @@ export default defineComponent({
         }
       ]
 
-      this.usuaris = await UsuariWebIesManacorDepartamentsService.findUsuaris();
+      this.usuaris = await UsuariWebIesManacorService.findUsuaris();
 
     }
   },
