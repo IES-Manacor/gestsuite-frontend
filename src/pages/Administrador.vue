@@ -11,6 +11,9 @@
     <q-btn @click="reassignarGrupsGSuiteToBBDD" color="primary" class="q-ma-md">Reassignar grups de GSuite a la BBDD.</q-btn>
     <small class="text-center">No actualitza GSuite, només la BBDD</small>
 
+    <q-btn @click="simula" color="primary" class="q-ma-md">Simulació</q-btn>
+    <small class="text-center">Si hi ha fitxer pujat, comença la simulació. NO desa cap resultat a base de dades ni a GSuite.</small>
+
     <q-btn @click="sync" color="primary" class="q-ma-md">Sincronitza</q-btn>
     <small class="text-center">Si hi ha fitxer pujat, comença la sincronització. Alerta, dura molt de temps.</small>
 
@@ -44,6 +47,10 @@ export default defineComponent({
     },
     reassignarGrupsGSuiteToBBDD: async function(){
       await this.$axios.post(process.env.API + '/api/core/sync/reassignarGrupsCorreuGSuiteToDatabase');
+    },
+    simula: async function(){
+      const resultat = await this.$axios.post(process.env.API + "/api/core/sync/simular");
+      console.log(resultat);
     },
     sync: async function(){
       await this.$axios.post(process.env.API + "/api/core/sync/sincronitza");

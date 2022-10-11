@@ -156,6 +156,14 @@ export default defineComponent({
           sortable: true
         },
         {
+          name: 'horariatenciopares',
+          required: true,
+          label: 'Horari Atenció Pares',
+          align: 'left',
+          field: row => (row.horariAtencioPares)?row.horariAtencioPares:'',
+          sortable: true
+        },
+        {
           name: 'accions',
           required: true,
           label: 'Accions',

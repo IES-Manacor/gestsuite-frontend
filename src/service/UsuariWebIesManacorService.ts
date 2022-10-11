@@ -48,6 +48,7 @@ export class UsuariWebIesManacorService {
       carrec3: json.carrec3,
       professor: professor,
       departament: (json.departament)?DepartamentService.fromJSON(json.departament):undefined,
+      horariAtencioPares: (json.horariAtencioPares)?json.horariAtencioPares:undefined,
       label: professor.nomComplet,
       value: json.idUsuari
     }

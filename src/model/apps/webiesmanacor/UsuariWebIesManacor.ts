@@ -10,6 +10,7 @@ export interface UsuariWebIesManacor {
   professor?: Usuari;
   departament?: Departament;
   substitut?: UsuariWebIesManacor;
+  horariAtencioPares?: string;
   label?: string;
   value?: string;
 }
