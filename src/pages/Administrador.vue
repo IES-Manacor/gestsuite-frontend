@@ -28,6 +28,10 @@
 
     <q-btn @click="provaGmail" color="primary" class="q-ma-md">Prova Gmail</q-btn>
     <small class="text-center">Missatge de prova de Gmail</small>
+
+    <div v-if="result">
+      <p v-for="r in result">{{r}}</p>
+    </div>
   </q-page>
 </template>
 
@@ -36,6 +40,11 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
   name: 'PageIndex',
+  data(){
+    return {
+      result: []
+    }
+  },
   created() {
     this.get();
   },
@@ -50,7 +59,7 @@ export default defineComponent({
     },
     simula: async function(){
       const resultat = await this.$axios.post(process.env.API + "/api/core/sync/simular");
-      console.log(resultat);
+      this.result = resultat.data;
     },
     sync: async function(){
       await this.$axios.post(process.env.API + "/api/core/sync/sincronitza");

@@ -20,10 +20,10 @@ export default boot(({ app,router }) => {
   // Add a request interceptor
   axios.interceptors.request.use(function (config) {
     if (!localStorage.getItem('token')) {
-      localStorage.setItem('token', '');
+      localStorage.setItem('token', "iesmanacor");
     }
     axios.defaults.withCredentials = true;
-    axios.defaults.headers.common['Authorization'] = 'Bearer '+localStorage.getItem('token');
+    axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
 
     return config;
   }, function (error) {

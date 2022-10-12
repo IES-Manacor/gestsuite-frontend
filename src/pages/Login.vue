@@ -21,7 +21,7 @@
 
         <h3 class="text-center text-black-50">GestSuite</h3>
 
-        <q-btn label="Entra amb Google" @click="loginGoogleDeleteCookies" size="xl" icon="lock" class="q-mb-md" color="primary"/>
+        <q-btn label="Entra amb Google" @click="loginGoogle" size="xl" icon="lock" class="q-mb-md" color="primary"/>
 
       </q-card-section>
     </q-card>
@@ -57,6 +57,8 @@
     mounted() {
       let scriptAuth = document.createElement('script')
       scriptAuth.setAttribute('src', 'https://accounts.google.com/gsi/client')
+      scriptAuth.setAttribute("async","async");
+      scriptAuth.setAttribute("defer","defer");
       document.head.appendChild(scriptAuth)
 
       scriptAuth.onload=async ()=>{
@@ -66,27 +68,30 @@
       document.querySelector(".background").style.backgroundImage=`url("${this.background}")`;
 
     },
-    created() {
-      localStorage.removeItem("token");
-      localStorage.removeItem("rol")
-
-    },
     methods: {
       async loginGoogle(){
+        this.clearCookies();
+
+        localStorage.removeItem("token");
+        localStorage.removeItem("rol")
+
         google.accounts.id.initialize({
           client_id: this.googleClientId,
-          auto_select: true,
-          ux_mode: "popup",
+          auto_select: false,
+          ux_mode: "redirect",
           callback: async (responseGoogle)=>{
             console.log("responseGoogle",responseGoogle)
             const token = responseGoogle.credential;
+
             const response = await this.$axios.post(process.env.API+'/api/core/auth/google/login', token)
             console.log("response",response)
 
             if (response && response.data) {
               //Desem primer el token per poder enviar-lo a la petició de rol.
               const tokenData = await response.data;
-              localStorage.setItem('token', tokenData);
+              if(tokenData) {
+                localStorage.setItem('token', tokenData);
+              }
 
               const responseRol = await this.$axios.get(process.env.API+'/api/core/auth/profile/rol',{
                 method: 'GET',
