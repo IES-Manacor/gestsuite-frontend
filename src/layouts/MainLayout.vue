@@ -68,14 +68,14 @@
             <q-item-label>Grups de correu</q-item-label>
           </q-item-section>
         </q-item>
-        <!--q-item clickable to="/calendari/list" v-if="rolsUser.find(rol=>rol==rols.ADMINISTRADOR || rol==rols.DIRECTOR)">
+        <q-item clickable to="/calendari/list" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR)">
           <q-item-section avatar>
             <q-icon name="calendar_today" />
           </q-item-section>
           <q-item-section>
             <q-item-label>Calendaris</q-item-label>
           </q-item-section>
-        </q-item-->
+        </q-item>
         <q-item clickable to="/llistats" v-if="rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS)">
           <q-item-section avatar>
             <q-icon name="summarize" />

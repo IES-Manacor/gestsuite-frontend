@@ -19,6 +19,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'departament', component: () => import('pages/DepartamentForm.vue') },
       { path: 'departament/:id', component: () => import('pages/DepartamentForm.vue') },
       { path: 'calendari/list', component: () => import('pages/CalendariList.vue') },
+      { path: 'calendari/:id', component: () => import('pages/CalendariForm.vue') },
       { path: 'usuari/list', component: () => import('pages/UsuariList.vue') },
       { path: 'llistats', component: () => import('pages/llistats/Llistats.vue') },
       { path: 'llistats/alumnatgrup', component: () => import('pages/llistats/AlumnatGrup.vue') },
