@@ -85,7 +85,7 @@ export default defineComponent({
           required: true,
           label: 'Accions',
           align: 'center',
-          field: row => row.id,
+          field: row => row.email,
           sortable: true
         }
       ]

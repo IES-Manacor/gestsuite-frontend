@@ -1,10 +1,7 @@
 <template>
   <q-page class="flex column q-gutter-lg" padding>
-    <p class="text-h3">{{grup.gsuiteNom}}</p>
-    <p class="text-h6">{{grup.gsuiteEmail}}</p>
-
-    <q-input v-model="grup.gsuiteNom" label="Nom" />
-    <q-input v-model="grup.gsuiteEmail" label="Email" />
+    <p class="text-h3">{{calendari.nom}}</p>
+    <p class="text-h6">{{calendari.email}}</p>
 
     <q-select
       filled
@@ -49,17 +46,7 @@
       </template>
     </q-select>
 
-    <q-select v-model="grup.grupCorreuTipus" :options="optionsGrupCorreuTipus" label="Tipus de grup" />
-
-    <q-select
-      v-if="grup.grupCorreuTipus==='ALUMNAT' || grup.grupCorreuTipus==='PROFESSORAT' || grup.grupCorreuTipus==='TUTORS'"
-      v-model="grup.grups"
-      :options="grupClasseOptions"
-      multiple
-      label="Grups classe associat"
-    />
-
-    <q-btn v-if="grup.grupCorreuTipus==='ALUMNAT' || grup.grupCorreuTipus==='PROFESSORAT' || grup.grupCorreuTipus==='TUTORS_FCT' || grup.grupCorreuTipus==='DEPARTAMENT'  || grup.grupCorreuTipus==='TUTORS'" label="Autoemplenar grup" color="primary" @click="confirmAutoemplenar = true" />
+    <q-select v-model="calendari.tipus" :options="optionsGrupCorreuTipus" label="Tipus de grup" />
 
     <q-list bordered class="rounded-borders">
 
@@ -68,8 +55,8 @@
 
       <q-item v-for="grup in grupMembers" clickable v-ripple>
         <q-item-section top class="col-10 gt-sm">
-          <q-item-label class="q-mt-sm">{{grup.gsuiteNom}}</q-item-label>
-          <q-item-label class="q-mt-sm">{{grup.gsuiteEmail}}</q-item-label>
+          <q-item-label class="q-mt-sm">{{grup.nom}}</q-item-label>
+          <q-item-label class="q-mt-sm">{{grup.email}}</q-item-label>
         </q-item-section>
 
         <q-item-section top side>
@@ -84,8 +71,8 @@
 
       <q-item v-for="user in members" clickable v-ripple>
         <q-item-section top class="col-10 gt-sm">
-          <q-item-label class="q-mt-sm">{{user.gsuiteFamilyName}}, {{user.gsuiteGivenName}}</q-item-label>
-          <q-item-label class="q-mt-sm">{{user.gsuiteEmail}}</q-item-label>
+          <q-item-label class="q-mt-sm">{{user.nomComplet}}</q-item-label>
+          <q-item-label class="q-mt-sm">{{user.email}}</q-item-label>
         </q-item-section>
 
         <q-item-section top side>
@@ -98,50 +85,39 @@
 
     <q-btn color="primary" icon="save" label="Desar" @click="save" />
 
-    <q-dialog v-model="confirmAutoemplenar" persistent>
-      <q-card>
-        <q-card-section class="row items-center">
-          <q-avatar icon="signal_wifi_off" color="primary" text-color="white" />
-          <span class="q-ml-sm">Està segur que vol autoemplenar el grup d'usuaris?</span>
-          <span class="q-ml-sm">Aquesta acció treurà els actuals membres i afegirà els nous a partir de l'arxiu de Gestib.</span>
-          <span class="q-ml-sm">Aquesta acció no es pot desfer.</span>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel·la" color="primary" v-close-popup />
-          <q-btn flat label="Autoemplena" color="primary" @click="autoemplenaUsuaris" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent } from 'vue';
+import {Calendari} from "src/model/google/Calendari";
+import {CalendariService} from "src/service/CalendariService";
+import {UsuariService} from "src/service/UsuariService";
+import {GrupCorreuService} from "src/service/GrupCorreuService";
+import {GrupCorreu} from "src/model/google/GrupCorreu";
+import {Usuari} from "src/model/Usuari";
+import {QTableColumn} from "quasar";
 
 export default defineComponent({
-  name: 'PageGrupCorreuForm',
+  name: 'PageCalendariForm',
   data() {
     return {
-      grup: {},
-      members: [],
-      users: [],
-      grupMembers: [],
-      grups: [],
-      grupsClasse:[],
+      calendari: {} as Calendari,
+      members: [] as Usuari[],
+      users: [] as Usuari[],
+      grupMembers: [] as GrupCorreu[],
+      grups: [] as GrupCorreu[],
       selected:[],
-      grupSelected: [],
-      options: [],
-      grupOptions: [],
+      grupSelected: [] as GrupCorreu[],
+      options: [] as Usuari[],
+      grupOptions: [] as GrupCorreu[],
       optionsGrupCorreuTipus: [],
-      grupClasseOptions: [],
       filterUsuaris: '',
       filterGrups: '',
       selectedUsuaris: [],
       selectedGrups: [],
-      columnesGrup: [],
-      columnesUsuari: [],
-      confirmAutoemplenar: false
+      columnesGrup: [] as QTableColumn[],
+      columnesUsuari: [] as QTableColumn[],
     }
   },
   created() {
@@ -220,128 +196,54 @@ export default defineComponent({
         }
       ]
 
-      const id = this.$route.params.id;
+      const id:string = (this.$route.params.id)?this.$route.params.id+'':'';
 
-      if(id) {
-        const response = await this.$axios.get(process.env.API + '/api/core/grupcorreu/grupambusuaris/' + id);
-        const data = await response.data;
-        this.grup = data;
+      if(id && id!='') {
+        this.calendari = await CalendariService.getCalendariByEmail(id);
 
-        this.members = data.usuaris.sort((a,b)=>{
-          if(a.gsuiteFamilyName != b.gsuiteFamilyName){
-            return a.gsuiteFamilyName.localeCompare(b.gsuiteFamilyName)
-          }
-          return a.gsuiteGivenName.localeCompare(b.gsuiteGivenName)
-        });
-        this.grupMembers = data.grupCorreus.sort((a,b)=>{
-          return a.gsuiteEmail.localeCompare(b.gsuiteEmail)
-        });
       }
 
-      const responseUsers = await this.$axios.get(process.env.API + '/api/core/usuaris/llistat/actius');
-      const dataUsers = await responseUsers.data;
-      this.users = dataUsers;
+      this.users = await UsuariService.findUsuarisActius();
 
-      const responseGroups = await this.$axios.get(process.env.API + '/api/core/grupcorreu/llistat');
-      const dataGroups = await responseGroups.data;
-      this.grups = dataGroups;
-
-      const responseGrupsClasse = await this.$axios.get(process.env.API + '/api/core/grup/llistat');
-      const dataGrupsClasse = await responseGrupsClasse.data;
-      /* TODO: PROMISE.ALL */
-      const gClasse = dataGrupsClasse.map(async g=>{
-        const responseCurs = await this.$axios.get(process.env.API + '/api/core/curs/getByCodiGestib/'+g.gestibCurs)
-        const dataCurs = await responseCurs.data;
-        g.curs = dataCurs;
-        return g;
-      });
-      const grupsClasse = await Promise.all(gClasse);
-      this.grupsClasse = grupsClasse.sort((a,b)=>{
-        if((!a || !a.curs || !a.curs.gestibNom || !a.gestibNom) && (!b || !b.curs || !b.curs.gestibNom || !b.gestibNom)){
-          return 0;
-        }
-        if(!a || !a.curs || !a.curs.gestibNom || !a.gestibNom){
-          return -1;
-        }
-        if(!b || !b.curs || !b.curs.gestibNom || !b.gestibNom){
-          return 1;
-        }
-        return (a.curs.gestibNom + a.gestibNom).localeCompare(b.curs.gestibNom + b.gestibNom)
-      })
+      this.grups = await GrupCorreuService.findAll();
 
 
-      this.options = this.users.map(user=>{
-        return {
-          label: user.gsuiteFamilyName + ', ' + user.gsuiteGivenName+ ' ('+user.gsuiteEmail+')',
-          value: user.gsuiteEmail
-        }
-      })
+      this.options = this.users;
 
-      this.grupOptions = this.grups.map(grup=>{
-        return {
-          label: grup.gsuiteNom + ' ('+grup.gsuiteEmail+')',
-          value: grup.gsuiteEmail
-        }
-      })
-      this.optionsGrupCorreuTipus = ['GENERAL','ALUMNAT','CLAUSTRE','PROFESSORAT','TUTORS','TUTORS_FCT','DEPARTAMENT']
+      this.grupOptions = this.grups;
 
-      this.grupClasseOptions = this.grupsClasse
-        .map(g=>{
-          return {
-            label: g.curs.gestibNom + g.gestibNom,
-            value: g.gestibIdentificador
-          }
-        })
-        .sort((a,b)=>{
-          if((!a || !a.curs || !a.curs.gestibNom || !a.gestibNom) && (!b || !b.curs || !b.curs.gestibNom || !b.gestibNom)){
-            return 0;
-          }
-          if(!a || !a.curs || !a.curs.gestibNom || !a.gestibNom){
-            return -1;
-          }
-          if(!b || !b.curs || !b.curs.gestibNom || !b.gestibNom){
-            return 1;
-          }
-          return (a.curs.gestibNom + a.gestibNom).localeCompare(b.curs.gestibNom + b.gestibNom)
-        })
-
-      if(id){
+      /*if(id){
         this.grup.grupCorreuTipus = this.optionsGrupCorreuTipus.find(tipus=>tipus==this.grup.grupCorreuTipus);
         this.grup.grups = this.grup.grups.map(g=>{
           return this.grupClasseOptions.find(gco=>gco.value===g.gestibIdentificador)
         })
-      }
+      }*/
 
       dialog.hide();
     },
-    deleteMember: function(member){
+    deleteMember: function(member:Usuari){
       this.members = this.members.filter(m=>{
         return m !== member
       })
     },
-    deleteGrupMember: function(member){
+    deleteGrupMember: function(member:GrupCorreu){
       this.grupMembers = this.grupMembers.filter(m=>{
         return m !== member
       })
     },
-    setModel (val) {
+    setModel (val:string  ) {
       let usuari = this.users.find(user=> {
-        return user.gsuiteFamilyName + ', ' + user.gsuiteGivenName + ' ('+user.gsuiteEmail+')' === val
+        return user.label === val
       })
       if(usuari){
         this.members.push(usuari)
         this.selected = [];
       }
     },
-    filterFn (val, update) {
+    filterFn (val:string, update:any) {
       if (val === '') {
         update(() => {
-          this.options = this.users.map(user=>{
-            return {
-              label: user.gsuiteFamilyName + ', ' + user.gsuiteGivenName + ' ('+user.gsuiteEmail+')',
-              value: user.gsuiteEmail
-            }
-          })
+          this.options = this.users
         })
         return
       }
@@ -349,48 +251,33 @@ export default defineComponent({
       update(() => {
         const needle = val.toLowerCase()
         this.options = this.users.filter(v => {
-          let cognoms = false;
-          let nom = false;
+          let nomComplet = false;
           let email = false;
 
-          if(v.gsuiteFamilyName) {
-            cognoms = v.gsuiteFamilyName.toLowerCase().indexOf(needle) > -1
+          if(v.nomComplet) {
+            nomComplet = v.nomComplet.toLowerCase().indexOf(needle) > -1
           }
 
-          if(v.gsuiteGivenName) {
-            nom = v.gsuiteGivenName.toLowerCase().indexOf(needle) > -1
+          if(v.email) {
+            email = v.email.toLowerCase().indexOf(needle) > -1
           }
-
-          if(v.gsuiteEmail) {
-            email = v.gsuiteEmail.toLowerCase().indexOf(needle) > -1
-          }
-          return cognoms || nom || email;
-        }).map(user=>{
-          return {
-            label: user.gsuiteFamilyName + ', ' + user.gsuiteGivenName + ' ('+user.gsuiteEmail+')',
-            value: user.gsuiteEmail
-          }
+          return nomComplet || email;
         })
       })
     },
-    setGrupModel (val) {
+    setGrupModel (val:string) {
       let grup = this.grups.find(grup=> {
-        return grup.gsuiteNom + ' ('+grup.gsuiteEmail+')' === val
+        return grup.label === val
       })
       if(grup){
         this.grupMembers.push(grup)
         this.grupSelected = [];
       }
     },
-    grupFilterFn (val, update) {
+    grupFilterFn (val:string, update:any) {
       if (val === '') {
         update(() => {
-          this.grupOptions = this.grups.map(grup=>{
-            return {
-              label: grup.gsuiteNom + ' ('+grup.gsuiteEmail+')',
-              value: grup.gsuiteEmail
-            }
-          })
+          this.grupOptions = this.grups
         })
         return
       }
@@ -401,19 +288,14 @@ export default defineComponent({
           let nom = false;
           let email = false;
 
-          if(v.gsuiteNom) {
-            nom = v.gsuiteNom.toLowerCase().indexOf(needle) > -1
+          if(v.nom) {
+            nom = v.nom.toLowerCase().indexOf(needle) > -1
           }
 
-          if(v.gsuiteEmail) {
-            email = v.gsuiteEmail.toLowerCase().indexOf(needle) > -1
+          if(v.email) {
+            email = v.email.toLowerCase().indexOf(needle) > -1
           }
           return nom || email;
-        }).map(grup=>{
-          return {
-            label: grup.gsuiteNom + ' ('+grup.gsuiteEmail+')',
-            value: grup.gsuiteEmail
-          }
         })
       })
     },
@@ -425,42 +307,13 @@ export default defineComponent({
         ok: false // we want the user to not be able to close it
       })
 
-      this.grup.usuaris = this.members;
-      this.grup.grupCorreus = this.grupMembers;
+      //this.calendari.usuaris = this.members;
+      //this.grup.grupCorreus = this.grupMembers;
 
-      await this.$axios.post(process.env.API + '/api/core/grupcorreu/desar',this.grup);
+      await this.$axios.post(process.env.API + '/api/core/grupcorreu/desar',this.calendari);
       dialog.hide();
       //Redirect
-      this.$router.push('/grupcorreu/list');
-    },
-    autoemplenaUsuaris: async function(){
-      const dialog = this.$q.dialog({
-        message: 'Carregant...',
-        progress: true, // we enable default settings
-        persistent: true, // we want the user to not be able to close it
-        ok: false // we want the user to not be able to close it
-      })
-
-      this.grup.usuaris = this.members;
-      this.grup.grupCorreus = this.grupMembers;
-
-
-      await this.$axios.post(process.env.API + '/api/core/grupcorreu/desar', this.grup);
-
-      const response = await this.$axios.get(process.env.API + '/api/core/grupcorreu/grupambusuaris/' + this.grup.gsuiteEmail);
-      const data = await response.data;
-      this.grup = data;
-
-      await this.$axios.post(process.env.API + '/api/core/grupcorreu/autoemplenar',this.grup);
-      dialog.hide();
-      //Redirect
-      //this.$router.push('/grupcorreu/'+this.grup.gsuiteEmail);
-      //this.reset();
-      window.location.reload();
-    },
-    reset() {
-      Object.assign(this.$data, this.$options.data.call(this));
-      this.$options.created.call(this);
+      this.$router.push('/calendari/list');
     }
   }
 })
