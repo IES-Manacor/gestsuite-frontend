@@ -35,6 +35,11 @@ export default defineComponent({
       });
 
       this.llistats.push({
+        nom: 'Alumnat amb pendents per grup',
+        url: '/llistats/alumnatgruppendents'
+      });
+
+      this.llistats.push({
         nom: 'Usuaris per grup de correu',
         url: '/llistats/usuarisgrupcorreu'
       });

@@ -23,6 +23,7 @@ const routes: RouteRecordRaw[] = [
       { path: 'usuari/list', component: () => import('pages/UsuariList.vue') },
       { path: 'llistats', component: () => import('pages/llistats/Llistats.vue') },
       { path: 'llistats/alumnatgrup', component: () => import('pages/llistats/AlumnatGrup.vue') },
+      { path: 'llistats/alumnatgruppendents', component: () => import('pages/llistats/AlumnatGrupPendents.vue') },
       { path: 'llistats/usuarisgrupcorreu', component: () => import('pages/llistats/UsuarisGrupCorreu.vue') },
       { path: 'llistats/usuarisdispositiu', component: () => import('pages/llistats/UsuarisDispositiu.vue') },
       { path: 'llistats/usuariscustom', component: () => import('pages/llistats/UsuarisCustom.vue') },
