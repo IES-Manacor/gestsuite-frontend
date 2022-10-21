@@ -235,7 +235,7 @@ export class ConvalidacioService {
       return ConvalidacioService.mapToItemConvalidacio(i)
     })
     const origensResolt= await Promise.all(origensMap);
-    console.log("Origens resolts",origensResolt);
+    //console.log("Origens resolts",origensResolt);
 
     return {
       id: data.idconvalidacio as number,
@@ -273,7 +273,7 @@ export class ConvalidacioService {
       return ConvalidacioService.mapToItemConvalidacio(i)
     })
     const origensResolt= await Promise.all(origensMap);
-    console.log("Origens resolts",origensResolt);
+    //console.log("Origens resolts",origensResolt);
 
     const encurs = await ConvalidacioService.mapToItemConvalidacio(data.estudisEnCurs);
 

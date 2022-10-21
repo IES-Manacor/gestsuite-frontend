@@ -99,6 +99,14 @@
         </q-table>
       </q-tab-panel>
       <q-tab-panel name="resolts">
+        <q-btn
+          color="primary"
+          icon-right="archive"
+          label="Exportar dades a csv"
+          no-caps
+          class="q-my-lg"
+          @click="exportTable"
+        />
         <q-table
           title="Sol·licituds resoltes"
           :rows="solicitudsResoltes"
@@ -187,7 +195,7 @@
 <script lang="ts">
 import {defineComponent, ref} from 'vue';
 import {ConvalidacioService} from 'src/service/ConvalidacioService';
-import {QTableColumn} from "quasar";
+import {QTableColumn,exportFile, useQuasar } from "quasar";
 import ConvalidacioListMenu from 'components/ConvalidacioList_Menu.vue';
 import {EstatSolicitudConvalidacio, SolicitudConvalidacio} from "src/model/apps/convalidacions/SolicitudConvalidacio";
 import {PDFService} from "src/service/PDFService";
@@ -262,21 +270,85 @@ export default defineComponent({
         sortable: true
       }
 
-      const columnaPDF:QTableColumn = {
-        name: 'accions',
-        required: true,
-        label: 'Accions',
-        align: 'center',
-        field: row => row.fitxerResolucio.url,
-        sortable: true
-      }
+      const columnesSolicitudsResoltes:QTableColumn[] = [
+        {
+          name: 'alumne',
+          required: true,
+          label: 'Alumne',
+          align: 'left',
+          field: row => (row.alumne)?row.alumne.cognom1 + " " + row.alumne.cognom2 + ", " + row.alumne.nom:row.cognomsAlumneManual + ", " +row.nomAlumneManual,
+          sortable: true
+        },
+        {
+          name: 'estudis',
+          required: true,
+          label: 'Estudis',
+          align: 'left',
+          field: row => row.estudisEnCurs.nom,
+          sortable: true
+        },
+        {
+          name: 'convalidacions_aprovades',
+          required: true,
+          label: 'Convalidacions aprovades',
+          align: 'left',
+          field: row => {
+            const resolucions = row.resolucions.filter((r:any)=>r.estat==='APROVAT').map((r:any)=>{
+              const codi = r.estudi.codi;
+              const nomEstudi = r.estudi.nom;
+              const qualificacio = r.qualificacio;
+              let result = "";
+              if(codi){
+                result += codi+" - ";
+              }
+              result += nomEstudi;
+              if(qualificacio){
+                result += " ("+qualificacio+")"
+              }
+              return result;
+            })
+            return resolucions.join(", ")
+          },
+          sortable: true,
+          style: 'overflow: hidden; white-space:pre-wrap; word-wrap:break-word; text-overflow: ellipsis;'
+        },
+        {
+          name: 'convalidacions_denegades',
+          required: true,
+          label: 'Convalidacions denegades',
+          align: 'left',
+          field: row => {
+            const resolucions = row.resolucions.filter((r:any)=>r.estat==='DENEGAT').map((r:any)=>{
+              const codi = r.estudi.codi;
+              const nomEstudi = r.estudi.nom;
+              let result = "";
+              if(codi){
+                result += codi+" - ";
+              }
+              result += nomEstudi;
+
+              return result;
+            })
+            return resolucions.join(", ")
+          },
+          sortable: true,
+          style: 'overflow: hidden; white-space:pre-wrap; word-wrap:break-word; text-overflow: ellipsis;'
+        },
+        {
+          name: 'accions',
+          required: true,
+          label: 'Accions',
+          align: 'center',
+          field: row => row.fitxerResolucio.url,
+          sortable: true
+        }
+      ]
 
       this.columnesPendentResolucio = [...columnes];
       this.columnesPendentResolucio.push(columnaAccions)
       this.columnesPendentSignatura = [...columnes];
       this.columnesPendentSignatura.push(columnaAccions)
-      this.columnesResoltes = [...columnes];
-      this.columnesResoltes.push(columnaPDF)
+      this.columnesResoltes = [...columnesSolicitudsResoltes];
       this.columnesStandBy = [...columnes];
       this.columnesStandBy.push(columnaAccions)
       this.columnesCancelades = [...columnes];
@@ -285,12 +357,12 @@ export default defineComponent({
       const solicitudsPromise: Promise<Array<SolicitudConvalidacio>> = ConvalidacioService.getSolicituds();
       const solicituds:Array<SolicitudConvalidacio> = await Promise.all(await solicitudsPromise);
 
-      console.log("Solicituds",solicituds)
+      //console.log("Solicituds",solicituds)
       this.solicitudsPendentResolucio = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.PENDENT_RESOLUCIO);
       this.solicitudsPendentSignatura = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.PENDENT_SIGNATURA);
       this.solicitudsResoltes = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.RESOLT);
       this.solicitudsCancelades = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.CANCELAT);
-      console.log(solicituds)
+      //console.log(solicituds)
     },
     esborrarSolicitud(id: number) {
       this.$q.dialog({
@@ -319,6 +391,51 @@ export default defineComponent({
         //window.location.reload();
       }, 1000);
     },
+     wrapCsvValue: function(val:any, formatFn?:any, row?:any) {
+      let formatted = formatFn !== void 0
+        ? formatFn(val, row)
+        : val
+
+      formatted = formatted === void 0 || formatted === null
+        ? ''
+        : String(formatted)
+
+      formatted = formatted.split('"').join('""')
+      /**
+       * Excel accepts \n and \r in strings, but some other CSV parsers do not
+       * Uncomment the next two lines to escape new lines
+       */
+      // .split('\n').join('\\n')
+      // .split('\r').join('\\r')
+
+      return `"${formatted}"`
+    },
+    exportTable: function(){
+      // naive encoding to csv format
+      const content = [this.columnesResoltes.map(col => this.wrapCsvValue(col.label))].concat(
+        this.solicitudsResoltes.map( (row:any) => this.columnesResoltes.map(col => (col.name!=='accions')?this.wrapCsvValue(
+          typeof col.field === 'function'
+            ? col.field(row)
+            : row[ col.field === void 0 ? col.name : col.field ],
+          col.format,
+          row
+        ):'').join(','))
+      ).join('\r\n')
+
+      const status = exportFile(
+        'table-export.csv',
+        content,
+        'text/csv'
+      )
+
+      if (status !== true) {
+        this.$q.notify({
+          message: 'Browser denied file download...',
+          color: 'negative',
+          icon: 'warning'
+        })
+      }
+    }
   }
 })
 </script>
