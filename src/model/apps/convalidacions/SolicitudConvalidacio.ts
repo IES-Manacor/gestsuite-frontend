@@ -4,7 +4,7 @@ import {ResolucioConvalidacio} from "src/model/apps/convalidacions/ResolucioConv
 import {FitxerBucket} from "src/model/google/FitxerBucket";
 
 export enum EstatSolicitudConvalidacio {
-  RESOLT="RESOLT",PENDENT_SIGNATURA="PENDENT_SIGNATURA",PENDENT_RESOLUCIO="PENDENT_RESOLUCIO",CANCELAT="CANCELAT"
+  RESOLT="RESOLT",PENDENT_SIGNATURA="PENDENT_SIGNATURA",PENDENT_RESOLUCIO="PENDENT_RESOLUCIO",CANCELAT="CANCELAT",STAND_BY="STAND_BY"
 }
 
 export interface SolicitudConvalidacio {
@@ -21,4 +21,5 @@ export interface SolicitudConvalidacio {
   nomAlumneManual?: string;
   cognomsAlumneManual?: string;
   files?: Array<FitxerBucket>;
+  fitxerResolucio?: FitxerBucket;
 }

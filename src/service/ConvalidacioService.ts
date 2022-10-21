@@ -309,6 +309,18 @@ export class ConvalidacioService {
       }
     }
 
+    let fitxerResolucio:FitxerBucket|null = null;
+    if(data.fitxerResolucio){
+      const f: any = await axios.get(process.env.API + '/api/core/fitxerbucket/' + data.fitxerResolucio);
+      const fitxerBucket: FitxerBucket = f.data;
+      if (fitxerBucket){
+        const url: any = await axios.post(process.env.API + '/api/core/googlestorage/generate-signed-url', fitxerBucket);
+        fitxerBucket.url = url.data;
+
+        fitxerResolucio = fitxerBucket;
+      }
+    }
+
     return{
       id: data.idsolicitud as number,
       alumne: alumne as Usuari,
@@ -322,7 +334,8 @@ export class ConvalidacioService {
       resolucions: data.resolucions as ResolucioConvalidacio[],
       nomAlumneManual: data.nomAlumneManual,
       cognomsAlumneManual: data.cognomsAlumneManual,
-      files: fitxersAlumne as FitxerBucket[]
+      files: fitxersAlumne as FitxerBucket[],
+      fitxerResolucio: fitxerResolucio as FitxerBucket
     }
   }
 

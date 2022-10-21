@@ -30,7 +30,7 @@
         <q-table
           title="Sol·licituds pendents de resolució"
           :rows="solicitudsPendentResolucio"
-          :columns="columnes"
+          :columns="columnesPendentResolucio"
           :filter="filterPendentResolucio"
         >
           <template v-slot:top-right>
@@ -65,7 +65,7 @@
         <q-table
           title="Sol·licituds pendent de signatura"
           :rows="solicitudsPendentSignatura"
-          :columns="columnes"
+          :columns="columnesPendentSignatura"
           :filter="filterPendentSignatura"
           row-key="id"
           selection="multiple"
@@ -102,7 +102,7 @@
         <q-table
           title="Sol·licituds resoltes"
           :rows="solicitudsResoltes"
-          :columns="columnes"
+          :columns="columnesResoltes"
           :filter="filterResoltes"
         >
           <template v-slot:top-right>
@@ -116,14 +116,9 @@
             <q-td :props="props">
               <div>
                 <q-btn-group push>
-                  <q-btn icon="edit" color="primary" :to="'/apps/convalidacions/solicitud/'+props.value">
+                  <q-btn icon="description" color="primary" :href="props.value" target="_blank">
                     <q-tooltip>
-                      Edita
-                    </q-tooltip>
-                  </q-btn>
-                  <q-btn icon="delete" color="primary" @click="esborrarSolicitud(props.value)">
-                    <q-tooltip>
-                      Esborra
+                      Document signat
                     </q-tooltip>
                   </q-btn>
                 </q-btn-group>
@@ -136,7 +131,7 @@
         <q-table
           title="Sol·licituds"
           :rows="solicitudsCancelades"
-          :columns="columnes"
+          :columns="columnesCancelades"
           :filter="filterCancelades"
         >
           <template v-slot:top-right>
@@ -207,7 +202,11 @@ export default defineComponent({
       solicitudsPendentSignatura: [] as SolicitudConvalidacio[],
       solicitudsResoltes: [] as SolicitudConvalidacio[],
       solicitudsCancelades: [] as SolicitudConvalidacio[],
-      columnes: [] as QTableColumn[],
+      columnesPendentSignatura: [] as QTableColumn[],
+      columnesPendentResolucio: [] as QTableColumn[],
+      columnesResoltes: [] as QTableColumn[],
+      columnesCancelades: [] as QTableColumn[],
+      columnesStandBy: [] as QTableColumn[],
       selectedPendentSignatura: [],
       filterPendentResolucio: '',
       filterPendentSignatura: '',
@@ -225,7 +224,7 @@ export default defineComponent({
   },
   methods: {
     get: async function () {
-      this.columnes = [
+      const columnes:QTableColumn[] = [
         {
           name: 'alumne',
           required: true,
@@ -251,16 +250,37 @@ export default defineComponent({
             }
           },
           sortable: true
-        },
-        {
-          name: 'accions',
-          required: true,
-          label: 'Accions',
-          align: 'center',
-          field: row => row.id,
-          sortable: true
         }
       ]
+
+      const columnaAccions:QTableColumn = {
+        name: 'accions',
+        required: true,
+        label: 'Accions',
+        align: 'center',
+        field: row => row.id,
+        sortable: true
+      }
+
+      const columnaPDF:QTableColumn = {
+        name: 'accions',
+        required: true,
+        label: 'Accions',
+        align: 'center',
+        field: row => row.fitxerResolucio.url,
+        sortable: true
+      }
+
+      this.columnesPendentResolucio = [...columnes];
+      this.columnesPendentResolucio.push(columnaAccions)
+      this.columnesPendentSignatura = [...columnes];
+      this.columnesPendentSignatura.push(columnaAccions)
+      this.columnesResoltes = [...columnes];
+      this.columnesResoltes.push(columnaPDF)
+      this.columnesStandBy = [...columnes];
+      this.columnesStandBy.push(columnaAccions)
+      this.columnesCancelades = [...columnes];
+      this.columnesCancelades.push(columnaAccions)
 
       const solicitudsPromise: Promise<Array<SolicitudConvalidacio>> = ConvalidacioService.getSolicituds();
       const solicituds:Array<SolicitudConvalidacio> = await Promise.all(await solicitudsPromise);
