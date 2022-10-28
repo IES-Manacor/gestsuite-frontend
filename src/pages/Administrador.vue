@@ -11,6 +11,9 @@
     <q-btn @click="reassignarGrupsGSuiteToBBDD" color="primary" class="q-ma-md">Reassignar grups de GSuite a la BBDD.</q-btn>
     <small class="text-center">No actualitza GSuite, només la BBDD</small>
 
+    <q-btn @click="cancelUpload" color="primary" class="q-ma-md">Cancel·la pujada de l'arxiu de sincronització.</q-btn>
+    <small class="text-center">Cancel·lar l'arxiu pujat a GestSuite</small>
+
     <q-btn @click="simula" color="primary" class="q-ma-md">Simulació</q-btn>
     <small class="text-center">Si hi ha fitxer pujat, comença la simulació. NO desa cap resultat a base de dades ni a GSuite.</small>
 
@@ -78,6 +81,9 @@ export default defineComponent({
     },
     importGSuiteUsers: async function(){
       await this.$axios.post(process.env.API + "/api/core/sync/importgsuiteusers");
+    },
+    cancelUpload: async function(){
+      await this.$axios.post(process.env.API + "/api/core/sync/cancelupload");
     }
 
   }
