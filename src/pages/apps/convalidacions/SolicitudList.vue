@@ -18,6 +18,7 @@
       narrow-indicator
     >
       <q-tab name="pendent_resolucio" label="Pendent de resolució"/>
+      <q-tab name="standby" label="En Espera"/>
       <q-tab name="pendent_signatura" label="Pendent de signatura"/>
       <q-tab name="resolts" label="Resolts"/>
       <q-tab name="cancelats" label="Cancel·lats"/>
@@ -47,6 +48,45 @@
                   <q-btn icon="edit" color="primary" :to="'/apps/convalidacions/solicitud/'+props.value">
                     <q-tooltip>
                       Edita
+                    </q-tooltip>
+                  </q-btn>
+                  <q-btn icon="change_circle" color="primary" @click="changeEstat(props.value,'standby')">
+                    <q-tooltip>
+                      Canvia l'estat a Espera
+                    </q-tooltip>
+                  </q-btn>
+                  <q-btn icon="delete" color="primary" @click="esborrarSolicitud(props.value)">
+                    <q-tooltip>
+                      Esborra
+                    </q-tooltip>
+                  </q-btn>
+                </q-btn-group>
+              </div>
+            </q-td>
+          </template>
+        </q-table>
+      </q-tab-panel>
+      <q-tab-panel name="standby">
+        <q-table
+          title="Sol·licituds en espera"
+          :rows="solicitudsStandBy"
+          :columns="columnesStandBy"
+          :filter="filterStandBy"
+        >
+          <template v-slot:top-right>
+            <q-input borderless dense debounce="300" v-model="filterStandBy" placeholder="Cerca">
+              <template v-slot:append>
+                <q-icon name="search"/>
+              </template>
+            </q-input>
+          </template>
+          <template v-slot:body-cell-accions="props">
+            <q-td :props="props">
+              <div>
+                <q-btn-group push>
+                  <q-btn icon="change_circle" color="primary" @click="changeEstat(props.value,'pendent')">
+                    <q-tooltip>
+                      Canvia l'estat a Pendent
                     </q-tooltip>
                   </q-btn>
                   <q-btn icon="delete" color="primary" @click="esborrarSolicitud(props.value)">
@@ -207,6 +247,7 @@ export default defineComponent({
   data() {
     return {
       solicitudsPendentResolucio: [] as SolicitudConvalidacio[],
+      solicitudsStandBy: [] as SolicitudConvalidacio[],
       solicitudsPendentSignatura: [] as SolicitudConvalidacio[],
       solicitudsResoltes: [] as SolicitudConvalidacio[],
       solicitudsCancelades: [] as SolicitudConvalidacio[],
@@ -217,6 +258,7 @@ export default defineComponent({
       columnesStandBy: [] as QTableColumn[],
       selectedPendentSignatura: [],
       filterPendentResolucio: '',
+      filterStandBy: '',
       filterPendentSignatura: '',
       filterResoltes: '',
       filterCancelades: '',
@@ -232,6 +274,13 @@ export default defineComponent({
   },
   methods: {
     get: async function () {
+      const dialog = this.$q.dialog({
+        message: 'Carregant...',
+        progress: true, // we enable default settings
+        persistent: true, // we want the user to not be able to close it
+        ok: false // we want the user to not be able to close it
+      })
+
       const columnes:QTableColumn[] = [
         {
           name: 'alumne',
@@ -255,6 +304,8 @@ export default defineComponent({
               return "Convalidació pendent de resolució per part de l'administració"
             } else if (row.estat === EstatSolicitudConvalidacio.CANCELAT){
               return "Convalidació cancel·lada per part de l'administració"
+            } else if (row.estat === EstatSolicitudConvalidacio.STAND_BY){
+              return "Convalidació en espera"
             }
           },
           sortable: true
@@ -362,7 +413,10 @@ export default defineComponent({
       this.solicitudsPendentSignatura = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.PENDENT_SIGNATURA);
       this.solicitudsResoltes = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.RESOLT);
       this.solicitudsCancelades = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.CANCELAT);
+      this.solicitudsStandBy = solicituds.filter(s=>s.estat===EstatSolicitudConvalidacio.STAND_BY);
       //console.log(solicituds)
+
+      dialog.hide();
     },
     esborrarSolicitud(id: number) {
       this.$q.dialog({
@@ -374,6 +428,33 @@ export default defineComponent({
       }).onOk(async () => {
         console.log('>>>> OK', id)
         await ConvalidacioService.esborrarSolicitud(id);
+        //Refresh data
+        setTimeout(function () {
+          window.location.reload();
+        }, 1000);
+      })
+    },
+    changeEstat(id: number,estat:string) {
+      let estatMsg = "";
+      if(estat==='pendent'){
+        estatMsg = "Pendent"
+      } else if(estat==='standby'){
+        estatMsg = "En Espera"
+      } else if(estat==='resolt'){
+        estatMsg = "Resolt"
+      } else if(estat==='cancelat'){
+        estatMsg = "Cancel·lat"
+      }
+
+      this.$q.dialog({
+        title: 'Confirm',
+        message: 'Vol canviar l\'estat d\'aquesta sol·licitut a '+estatMsg+'?',
+        ok: "D'acord",
+        cancel: "Cancel·la",
+        persistent: true
+      }).onOk(async () => {
+        console.log('>>>> OK', id)
+        await ConvalidacioService.canviarEstatSolicitud(id,estat);
         //Refresh data
         setTimeout(function () {
           window.location.reload();

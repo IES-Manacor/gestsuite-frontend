@@ -345,6 +345,14 @@ export class ConvalidacioService {
     await axios.post(process.env.API + '/api/convalidacions/solicitud/esborrar',solicitud);
   }
 
+  static async canviarEstatSolicitud(id:number,estat:string):Promise<void>{
+    console.log("ID",id);
+    const solicitud:SolicitudConvalidacio = await this.getSolicitudById(id);
+    solicitud.estat = estat as EstatSolicitudConvalidacio;
+
+    await axios.post(process.env.API + '/api/convalidacions/solicitud/changeEstat',solicitud);
+  }
+
   static async calcularConvalidacions(solicitud:SolicitudConvalidacio,isPublic:boolean=false): Promise<Array<ItemConvalidacio>> {
     let publicSite:string = '';
     if(isPublic){
