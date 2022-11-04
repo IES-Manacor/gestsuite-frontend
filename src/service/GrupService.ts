@@ -1,7 +1,7 @@
 import {axios}  from 'boot/axios'
 import {Curs} from "src/model/gestib/Curs";
 import {Grup} from "src/model/gestib/Grup";
-import {Usuari} from "src/model/Usuari";
+import {UsuariService} from "src/service/UsuariService";
 
 export class GrupService {
 
@@ -9,72 +9,36 @@ export class GrupService {
     const response = await axios.get(process.env.API + '/api/core/grup/findByCurs/'+curs.id);
     const grups = await response.data;
 
-    if(includeTutorsGrup) {
-      for (let grup of grups) {
-        if (grup.gestibTutor1) {
-          const response = await axios.get(process.env.API + '/api/core/usuaris/profile-by-gestib-codi/' + grup.gestibTutor1);
-          const usuari:any = await response.data;
-          grup.gestibTutor1 =  {
-            id: usuari.idusuari,
-            email: usuari.gsuiteEmail,
-            nom: usuari.gestibNom,
-            cognom1: usuari.gestibCognom1,
-            cognom2: usuari.gestibCognom2,
-            nomComplet: usuari.gsuiteFullName,
-            expedient: usuari.gestibExpedient,
-            esAlumne: usuari.gestibAlumne,
-            esProfessor: usuari.gestibProfessor,
-            label: usuari.gsuiteFullName,
-            value: usuari.idusuari
-          };
-        }
+    return Promise.all(grups.map(async (grup:any)=>{
+      return await this.fromJSON(grup,includeTutorsGrup);
+    }));
+  }
 
-        if (grup.gestibTutor2) {
-          const response = await axios.get(process.env.API + '/api/core/usuaris/profile-by-gestib-codi/' + grup.gestibTutor2);
-          const usuari:any = await response.data;
-          grup.gestibTutor2 = {
-            id: usuari.idusuari,
-            email: usuari.gsuiteEmail,
-            nom: usuari.gestibNom,
-            cognom1: usuari.gestibCognom1,
-            cognom2: usuari.gestibCognom2,
-            nomComplet: usuari.gsuiteFullName,
-            expedient: usuari.gestibExpedient,
-            esAlumne: usuari.gestibAlumne,
-            esProfessor: usuari.gestibProfessor,
-            label: usuari.gsuiteFullName,
-            value: usuari.idusuari
-          };
-        }
+  static async getByGestibIdentificador(id:string): Promise<Grup> {
+    const responseGrup = await axios.get(process.env.API + '/api/core/grup/getByGestibIdentificador/'+id);
+    const grup:any = await responseGrup.data;
+    return this.fromJSON(grup);
+  }
 
-        if (grup.gestibTutor3) {
-          const response = await axios.get(process.env.API + '/api/core/usuaris/profile-by-gestib-codi/' + grup.gestibTutor3);
-          const usuari:any = await response.data;
-          grup.gestibTutor3 = {
-            id: usuari.idusuari,
-            email: usuari.gsuiteEmail,
-            nom: usuari.gestibNom,
-            cognom1: usuari.gestibCognom1,
-            cognom2: usuari.gestibCognom2,
-            nomComplet: usuari.gsuiteFullName,
-            expedient: usuari.gestibExpedient,
-            esAlumne: usuari.gestibAlumne,
-            esProfessor: usuari.gestibProfessor,
-            label: usuari.gsuiteFullName,
-            value: usuari.idusuari
-          };
-        }
-      }
+  static async fromJSON(json:any,includeTutorsGrup:boolean=false):Promise<Grup>{
+    let tutor1 = undefined;
+    if(json.gestibTutor1 && includeTutorsGrup){
+      tutor1 = await UsuariService.getByGestibId(json.gestibTutor1);
     }
-
-    return grups.map((grup:any)=>{
-      return {
-        id: grup.idgrup,
-        nom: grup.gestibNom,
-        tutor1: grup.gestibTutor1,
-        tutor2: grup.gestibTutor2,
-        tutor3: grup.gestibTutor3
-      }
-    });
+    let tutor2 = undefined;
+    if(json.gestibTutor2 && includeTutorsGrup){
+      tutor2 = await UsuariService.getByGestibId(json.gestibTutor2);
+    }
+    let tutor3 = undefined;
+    if(json.gestibTutor3 && includeTutorsGrup){
+      tutor3 = await UsuariService.getByGestibId(json.gestibTutor3);
+    }
+    return {
+      id: json.idgrup,
+      nom: json.gestibNom,
+      tutor1: tutor1,
+      tutor2: tutor2,
+      tutor3: tutor3
+    }
   }
 }

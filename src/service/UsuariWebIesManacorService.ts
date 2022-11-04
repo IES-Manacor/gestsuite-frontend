@@ -12,8 +12,8 @@ export class UsuariWebIesManacorService {
   static async findUsuaris(): Promise<Array<UsuariWebIesManacor>> {
     const responseUsers = await axios.get(process.env.API + '/api/webiesmanacor/usuari/llistat');
     const data = await responseUsers.data;
-    return data.map((usuari: any): UsuariWebIesManacor => {
-      return this.fromJSON(usuari)
+    return data.map(async (usuari: any): Promise<UsuariWebIesManacor> => {
+      return await this.fromJSON(usuari)
     }).sort((a: UsuariWebIesManacor, b: UsuariWebIesManacor) => {
       if ((!a || !a.professor || !a.professor.nomComplet) && (!b || !b.professor || !b.professor.nomComplet)) {
         return 0;
@@ -38,8 +38,8 @@ export class UsuariWebIesManacorService {
     await axios.post(process.env.API + '/api/webiesmanacor/usuari/desar',usuari);
   }
 
-  static fromJSON(json:any):UsuariWebIesManacor{
-    const professor = UsuariService.fromJSON(json.professor)
+  static async fromJSON(json:any):Promise<UsuariWebIesManacor>{
+    const professor = await UsuariService.fromJSON(json.professor)
     return {
       id: json.idUsuari,
       foto: json.foto,
@@ -47,7 +47,7 @@ export class UsuariWebIesManacorService {
       carrec2: json.carrec2,
       carrec3: json.carrec3,
       professor: professor,
-      departament: (json.departament)?DepartamentService.fromJSON(json.departament):undefined,
+      departament: (json.departament)?await DepartamentService.fromJSON(json.departament):undefined,
       horariAtencioPares: (json.horariAtencioPares)?json.horariAtencioPares:undefined,
       label: professor.nomComplet,
       value: json.idUsuari

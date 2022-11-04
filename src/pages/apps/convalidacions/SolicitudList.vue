@@ -331,6 +331,19 @@ export default defineComponent({
           sortable: true
         },
         {
+          name: 'Grup',
+          required: true,
+          label: 'Grup',
+          align: 'left',
+          field: row => {
+            if(row.alumne && row.alumne.grup){
+              return row.alumne.grup.nom
+            }
+            return ""
+          },
+          sortable: true
+        },
+        {
           name: 'estudis',
           required: true,
           label: 'Estudis',

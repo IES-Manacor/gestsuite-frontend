@@ -1,3 +1,5 @@
+import {Grup} from "src/model/gestib/Grup";
+
 export interface Usuari {
   id: number;
   email: string;
@@ -8,6 +10,7 @@ export interface Usuari {
   expedient?: string;
   esProfessor?: boolean;
   esAlumne?: boolean;
+  grup?: Grup,
   label?: string;
   value?: string;
 }

@@ -281,17 +281,7 @@ export class ConvalidacioService {
     if(data.alumne) {
       const responseUser = await axios.get(process.env.API + '/api/core/usuaris/profile/'+data.alumne);
       const usuari = await responseUser.data;
-      alumne = {
-        id: usuari.idusuari,
-        email: usuari.gsuiteEmail,
-        nom: usuari.gestibNom,
-        cognom1: usuari.gestibCognom1,
-        cognom2: usuari.gestibCognom2,
-        nomComplet: usuari.gsuiteFullName,
-        expedient: usuari.gestibExpedient,
-        esAlumne: usuari.gestibAlumne,
-        esProfessor: usuari.gestibProfessor,
-      };
+      alumne = await UsuariService.fromJSON(usuari)
     }
 
     let fitxersAlumne:FitxerBucket[]|null = null;

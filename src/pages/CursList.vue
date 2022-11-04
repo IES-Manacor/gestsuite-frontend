@@ -80,6 +80,7 @@ export default defineComponent({
           label: 'Grups',
           align: 'left',
           field: row => {
+            console.log(row);
             if(row.grups){
               return row.grups.map((g:Grup)=>g.nom).join(", ")
             }

@@ -1,9 +1,5 @@
 import {axios}  from 'boot/axios'
-import {Curs} from "src/model/gestib/Curs";
 import {Departament} from "src/model/gestib/Departament";
-import {
-  UsuariWebIesManacor
-} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 import {UsuariService} from "src/service/UsuariService";
 
 export class DepartamentService {
@@ -23,17 +19,17 @@ export class DepartamentService {
   static async getDepartaments(): Promise<Array<Departament>> {
     const response = await axios.get(process.env.API + '/api/core/departament/llistat');
     const data = await response.data;
-    return data.map((departament:any):Departament=>{
-        return this.fromJSON(departament)
-    });
+    return Promise.all(data.map(async (departament:any):Promise<Departament>=>{
+        return await this.fromJSON(departament)
+    }));
   }
 
-  static fromJSON(json:any):Departament{
+  static async fromJSON(json:any):Promise<Departament>{
     return {
       id: json.iddepartament,
       nom: json.gestibNom,
       gestibId: json.gestibIdentificador,
-      capDepartament: (json.capDepartament)?UsuariService.fromJSON(json.capDepartament):undefined
+      capDepartament: (json.capDepartament)?await UsuariService.fromJSON(json.capDepartament):undefined
     }
   }
 }
