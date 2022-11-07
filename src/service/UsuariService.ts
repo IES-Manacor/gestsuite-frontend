@@ -3,11 +3,11 @@ import {Usuari} from "src/model/Usuari";
 import {GrupService} from "src/service/GrupService";
 
 export class UsuariService {
-  static async findUsuarisActius(): Promise<Array<Usuari>> {
+  static async findUsuarisActius(includeGrup:boolean=false): Promise<Array<Usuari>> {
     const responseUsers = await axios.get(process.env.API + '/api/core/usuaris/llistat/actius');
     const data = await responseUsers.data;
     const usuaris = await Promise.all(data.map(async (usuari:any):Promise<Usuari>=>{
-      return await this.fromJSON(usuari)
+      return await this.fromJSON(usuari,includeGrup)
     }))
     //return usuaris;
     return await usuaris.sort((a:Usuari,b:Usuari)=>{
@@ -42,7 +42,7 @@ export class UsuariService {
     return this.fromJSON(usuari);
   }
 
-  static async fromJSON(json:any):Promise<Usuari>{
+  static async fromJSON(json:any,includeGrup:boolean=true):Promise<Usuari>{
     return {
       id: json.idusuari,
       email: json.gsuiteEmail,
@@ -53,7 +53,7 @@ export class UsuariService {
       expedient: json.gestibExpedient,
       esAlumne: json.gestibAlumne,
       esProfessor: json.gestibProfessor,
-      grup: (json.gestibGrup)?await GrupService.getByGestibIdentificador(json.gestibGrup):undefined,
+      grup: (json.gestibGrup && includeGrup)?await GrupService.getByGestibIdentificador(json.gestibGrup):undefined,
       label: json.gestibCognom1 + ' ' + json.gestibCognom2 + ', '+ json.gestibNom,
       value: json.idusuari
     }
