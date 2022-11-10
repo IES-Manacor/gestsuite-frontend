@@ -64,9 +64,7 @@
 import {defineComponent} from 'vue';
 import {UsuariWebIesManacorService} from "../../../service/UsuariWebIesManacorService";
 import {QTableColumn} from "quasar";
-import {
-  UsuariWebIesManacor
-} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
+import {UsuariWebIesManacor} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 
 export default defineComponent({
   name: 'UsuariList',
@@ -164,6 +162,14 @@ export default defineComponent({
           sortable: true
         },
         {
+          name: 'substitut',
+          required: true,
+          label: 'Substitut',
+          align: 'left',
+          field: row => (row.substitut)?row.substitut.professor.nomComplet:'',
+          sortable: true
+        },
+        {
           name: 'accions',
           required: true,
           label: 'Accions',
@@ -173,8 +179,8 @@ export default defineComponent({
         }
       ]
 
-      this.usuaris = await UsuariWebIesManacorService.findUsuaris();
-
+      const usuaris = await UsuariWebIesManacorService.findUsuaris();
+      this.usuaris = await Promise.all(usuaris);
     }
   },
 })

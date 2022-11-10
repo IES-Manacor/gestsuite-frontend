@@ -1,20 +1,18 @@
-import {Usuari} from "src/model/Usuari";
 import {axios} from "boot/axios";
-import {
-  UsuariWebIesManacor
-} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
+import {UsuariWebIesManacor} from "src/model/apps/webiesmanacor/UsuariWebIesManacor";
 import {UsuariService} from "src/service/UsuariService";
-import {Curs} from "src/model/gestib/Curs";
 import {DepartamentService} from "src/service/DepartamentService";
-import {CategoriaConvalidacio} from "src/model/apps/convalidacions/CategoriaConvalidacio";
 
 export class UsuariWebIesManacorService {
   static async findUsuaris(): Promise<Array<UsuariWebIesManacor>> {
     const responseUsers = await axios.get(process.env.API + '/api/webiesmanacor/usuari/llistat');
     const data = await responseUsers.data;
-    return data.map(async (usuari: any): Promise<UsuariWebIesManacor> => {
-      return await this.fromJSON(usuari)
-    }).sort((a: UsuariWebIesManacor, b: UsuariWebIesManacor) => {
+    return data.map((usuari: any): Promise<UsuariWebIesManacor> => {
+      return this.fromJSON(usuari);
+    })
+
+    /*
+    .sort((a: UsuariWebIesManacor, b: UsuariWebIesManacor) => {
       if ((!a || !a.professor || !a.professor.nomComplet) && (!b || !b.professor || !b.professor.nomComplet)) {
         return 0;
       }
@@ -26,6 +24,7 @@ export class UsuariWebIesManacorService {
       }
       return a.professor.nomComplet.localeCompare(b.professor.nomComplet)
     });
+     */
   }
 
   static async getById(id:number): Promise<UsuariWebIesManacor> {
@@ -39,7 +38,7 @@ export class UsuariWebIesManacorService {
   }
 
   static async fromJSON(json:any):Promise<UsuariWebIesManacor>{
-    const professor = await UsuariService.fromJSON(json.professor)
+    const professor = (json.professor)?await UsuariService.fromJSON(json.professor,false):await UsuariService.getById(json.idUsuari);
     return {
       id: json.idUsuari,
       foto: json.foto,
@@ -47,6 +46,7 @@ export class UsuariWebIesManacorService {
       carrec2: json.carrec2,
       carrec3: json.carrec3,
       professor: professor,
+      substitut: (json.substitut)?await this.fromJSON(json.substitut):undefined,
       departament: (json.departament)?await DepartamentService.fromJSON(json.departament):undefined,
       horariAtencioPares: (json.horariAtencioPares)?json.horariAtencioPares:undefined,
       label: professor.nomComplet,

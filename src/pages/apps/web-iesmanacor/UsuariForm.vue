@@ -24,8 +24,7 @@
     <q-input v-model="usuari.carrec3" label="Càrrec 3" />
 
     <q-select
-      filled
-      :model-value="usuari.substitut"
+      v-model="usuari.substitut"
       :options="usuaris"
       label="Usuari substitut"
       class="q-mb-lg"
@@ -72,7 +71,8 @@ export default defineComponent({
 
         this.usuari = usuari;
 
-        this.usuaris = await UsuariWebIesManacorService.findUsuaris();
+        const usuaris = await UsuariWebIesManacorService.findUsuaris();
+        this.usuaris = await Promise.all(usuaris);
       }
 
 
