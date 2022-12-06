@@ -7,12 +7,14 @@ export class UsuariWebIesManacorService {
   static async findUsuaris(): Promise<Array<UsuariWebIesManacor>> {
     const responseUsers = await axios.get(process.env.API + '/api/webiesmanacor/usuari/llistat');
     const data = await responseUsers.data;
-    return data.map((usuari: any): Promise<UsuariWebIesManacor> => {
-      return this.fromJSON(usuari);
+    const usuaris:Array<UsuariWebIesManacor> = data.map((usuari: any): Promise<UsuariWebIesManacor> => {
+      return this.fromJSON(usuari).then(user=>{
+        user.label = user.professor?.cognom1 + ' ' + user.professor?.cognom2 + ", " + user.professor?.nom;
+        return user;
+      })
     })
 
-    /*
-    .sort((a: UsuariWebIesManacor, b: UsuariWebIesManacor) => {
+    usuaris.sort((a: UsuariWebIesManacor, b: UsuariWebIesManacor) => {
       if ((!a || !a.professor || !a.professor.nomComplet) && (!b || !b.professor || !b.professor.nomComplet)) {
         return 0;
       }
@@ -24,7 +26,9 @@ export class UsuariWebIesManacorService {
       }
       return a.professor.nomComplet.localeCompare(b.professor.nomComplet)
     });
-     */
+
+    return usuaris;
+
   }
 
   static async getById(id:number): Promise<UsuariWebIesManacor> {
@@ -38,7 +42,7 @@ export class UsuariWebIesManacorService {
   }
 
   static async fromJSON(json:any):Promise<UsuariWebIesManacor>{
-    const professor = (json.professor)?await UsuariService.fromJSON(json.professor,false):await UsuariService.getById(json.idUsuari);
+    const professor = (json.professor)?await UsuariService.fromJSON(json.professor,false):undefined;
     return {
       id: json.idUsuari,
       foto: json.foto,
@@ -49,7 +53,7 @@ export class UsuariWebIesManacorService {
       substitut: (json.substitut)?await this.fromJSON(json.substitut):undefined,
       departament: (json.departament)?await DepartamentService.fromJSON(json.departament):undefined,
       horariAtencioPares: (json.horariAtencioPares)?json.horariAtencioPares:undefined,
-      label: professor.nomComplet,
+      label: professor?.nomComplet||'',
       value: json.idUsuari
     }
   }

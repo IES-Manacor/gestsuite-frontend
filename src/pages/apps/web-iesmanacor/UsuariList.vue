@@ -166,7 +166,7 @@ export default defineComponent({
           required: true,
           label: 'Substitut',
           align: 'left',
-          field: row => (row.substitut)?row.substitut.professor.nomComplet:'',
+          field: row => (row.substitut && row.substitut.professor)?row.substitut.professor.nomComplet:'',
           sortable: true
         },
         {

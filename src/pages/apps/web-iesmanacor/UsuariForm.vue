@@ -28,7 +28,11 @@
       :options="usuaris"
       label="Usuari substitut"
       class="q-mb-lg"
-    />
+    >
+      <template v-if="usuari.substitut" v-slot:append>
+        <q-icon name="cancel" @click.stop.prevent="usuari.substitut = null" class="cursor-pointer" />
+      </template>
+    </q-select>
 
     <q-btn color="primary" icon="save" label="Desar" @click="save" />
 
@@ -73,6 +77,10 @@ export default defineComponent({
 
         const usuaris = await UsuariWebIesManacorService.findUsuaris();
         this.usuaris = await Promise.all(usuaris);
+
+        if(this.usuari.substitut){
+          this.usuari.substitut = this.usuaris.find(u=>u.id===this.usuari.substitut?.id)
+        }
       }
 
 

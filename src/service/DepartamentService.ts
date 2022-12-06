@@ -4,6 +4,8 @@ import {UsuariService} from "src/service/UsuariService";
 
 export class DepartamentService {
 
+  prova(){}
+
   static async getDepartamentById(id:string): Promise<Departament> {
     const response = await axios.get(process.env.API + '/api/core/departament/getById/' + id);
     const data:any = await response.data;
