@@ -84,25 +84,9 @@ export default defineComponent({
         {
           name: 'nom',
           required: true,
-          label: 'Nom',
+          label: 'Nom complet',
           align: 'left',
-          field: row => (row.professor && row.professor.nom)?row.professor.nom:'',
-          sortable: true
-        },
-        {
-          name: 'cognom1',
-          required: true,
-          label: 'Cognom 1',
-          align: 'left',
-          field: row => (row.professor && row.professor.cognom1)?row.professor.cognom1:'',
-          sortable: true
-        },
-        {
-          name: 'cognom2',
-          required: true,
-          label: 'Cognom 2',
-          align: 'left',
-          field: row => (row.professor && row.professor.cognom2)?row.professor.cognom2:'',
+          field: row => row.nom,
           sortable: true
         },
         {
@@ -167,6 +151,14 @@ export default defineComponent({
           label: 'Substitut',
           align: 'left',
           field: row => (row.substitut && row.substitut.professor)?row.substitut.professor.nomComplet:'',
+          sortable: true
+        },
+        {
+          name: 'visible',
+          required: true,
+          label: 'Visible?',
+          align: 'left',
+          field: row => (row.visible)?'Si':'No',
           sortable: true
         },
         {

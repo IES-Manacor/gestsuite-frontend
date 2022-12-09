@@ -45,10 +45,12 @@ export class UsuariWebIesManacorService {
     const professor = (json.professor)?await UsuariService.fromJSON(json.professor,false):undefined;
     return {
       id: json.idUsuari,
+      nom: json.nom,
       foto: json.foto,
       carrec1: json.carrec1,
       carrec2: json.carrec2,
       carrec3: json.carrec3,
+      visible: json.visible,
       professor: professor,
       substitut: (json.substitut)?await this.fromJSON(json.substitut):undefined,
       departament: (json.departament)?await DepartamentService.fromJSON(json.departament):undefined,

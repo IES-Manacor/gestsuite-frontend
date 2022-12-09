@@ -1,7 +1,9 @@
 <template>
   <q-page class="flex column q-gutter-lg" padding>
 
-    <p class="text-h3">{{(usuari && usuari.professor)?usuari.professor.nomComplet:""}}</p>
+    <p class="text-h3">{{usuari.nom}}</p>
+
+    <q-input v-model="usuari.nom" label="Nom complet"/>
 
     <div class="flex">
       <q-input v-model="usuari.foto" label="Foto" class="col q-mr-lg" />
@@ -33,6 +35,8 @@
         <q-icon name="cancel" @click.stop.prevent="usuari.substitut = null" class="cursor-pointer" />
       </template>
     </q-select>
+
+    <q-checkbox v-model="usuari.visible" label="Visible al departament?" />
 
     <q-btn color="primary" icon="save" label="Desar" @click="save" />
 
