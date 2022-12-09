@@ -26,6 +26,18 @@ export class DepartamentService {
     }));
   }
 
+  static async generarScriptDepartament(id:number) {
+    await axios.post(process.env.API + '/api/webiesmanacor/departament/generarScript',{
+      id:id
+    });
+  }
+
+  static async recuperarBackupScriptDepartament(id:number) {
+    await axios.post(process.env.API + '/api/webiesmanacor/departament/recuperarBackupScript',{
+      id:id
+    });
+  }
+
   static async fromJSON(json:any):Promise<Departament>{
     return {
       id: json.iddepartament,
