@@ -12,7 +12,7 @@
             <q-item v-for="departament in departaments">
               <q-item-section>
                 <q-item><strong>{{departament.nom}}</strong></q-item>
-                <q-item>&lt;script type="text/javascript" crossorigin="anonymous" src="{{urlServer}}/api/webiesmanacor/public/loadDepartament/{{departament.id}}/script.js"&gt;&lt;/script&gt;</q-item>
+                <q-item>&lt;script defer type="text/javascript" crossorigin="anonymous" src="{{urlServer}}/api/webiesmanacor/public/loadDepartament/{{departament.id}}/script.js"&gt;&lt;/script&gt;</q-item>
               </q-item-section>
             </q-item>
           </q-list>
