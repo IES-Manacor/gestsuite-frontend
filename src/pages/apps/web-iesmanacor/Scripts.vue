@@ -16,7 +16,7 @@
               </q-item-section>
               <q-item-section avatar>
                 <q-btn color="primary" label="Generar Script" @click="generarScript(departament.id)" />
-                <q-btn color="primary" label="Recuperar Backup" />
+                <q-btn color="primary" label="Recuperar Backup" @click="recuperarBackupScript(departament.id)" />
               </q-item-section>
             </q-item>
           </q-list>
@@ -50,7 +50,7 @@ export default defineComponent({
       await DepartamentService.generarScriptDepartament(id);
     },
     recuperarBackupScript: async function (id:number) {
-      await DepartamentService.generarScriptDepartament(id);
+      await DepartamentService.recuperarBackupScriptDepartament(id);
     }
   },
 })
