@@ -15,8 +15,10 @@
                   <code>&lt;script defer type="text/javascript" crossorigin="anonymous" src="{{urlServer}}/api/webiesmanacor/public/loadDepartament/{{departament.id}}/script.js"&gt;&lt;/script&gt;</code>
               </q-item-section>
               <q-item-section avatar>
-                <q-btn color="primary" label="Generar Script" @click="generarScript(departament.id)" />
-                <q-btn color="primary" label="Recuperar Backup" @click="recuperarBackupScript(departament.id)" />
+                <q-btn-group>
+                  <q-btn color="primary" label="Generar Script" @click="generarScript(departament.id)" />
+                  <q-btn color="primary" label="Recuperar Backup" @click="recuperarBackupScript(departament.id)" />
+                </q-btn-group>
               </q-item-section>
             </q-item>
           </q-list>
