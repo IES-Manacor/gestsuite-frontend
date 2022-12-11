@@ -12,6 +12,7 @@
 
 <script>
 import { defineComponent } from 'vue';
+import {Rol} from "src/model/Rol.ts";
 
 export default defineComponent({
   name: 'PageCalendari',
@@ -31,6 +32,9 @@ export default defineComponent({
       this.enableGrupsCooperatius = (process.env.APP_ENABLE_GRUPSCOOPERATIUS==='true');
       this.enableConvalidacions=(process.env.APP_ENABLE_CONVALIDACIONS==='true');
       this.enableWebIESManacor=(process.env.APP_ENABLE_WEBIESMANACOR==='true');
+      const rolsUser = JSON.parse(localStorage.getItem("rol")) || []; //Inicialitzem a un array buit si no existeix cap rol
+      const rols = Rol;
+
 
       if(this.enableGrupsCooperatius) {
         this.llistatApps.push({
@@ -40,7 +44,7 @@ export default defineComponent({
         });
       }
 
-      if(this.enableConvalidacions) {
+      if(this.enableConvalidacions && rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR)) {
         this.llistatApps.push({
           icon: 'checklist',
           nom: 'Convalidacions',
@@ -48,7 +52,7 @@ export default defineComponent({
         });
       }
 
-      if(this.enableWebIESManacor) {
+      if(this.enableWebIESManacor && rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.WEB)) {
         this.llistatApps.push({
           icon: 'public',
           nom: 'Web',

@@ -92,7 +92,7 @@
             <q-item-label>Pujar fitxer Gestib</q-item-label>
           </q-item-section>
         </q-item>
-        <q-item clickable to="/apps" v-if="enableApps && (rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU))">
+        <q-item clickable to="/apps" v-if="enableApps && (rolsUser.find(rol=>rol===rols.ADMINISTRADOR || rol===rols.DIRECTOR || rol===rols.CAP_ESTUDIS || rol===rols.ADMINISTRATIU || rol===rols.WEB))">
           <q-item-section avatar>
             <q-icon name="apps" />
           </q-item-section>
